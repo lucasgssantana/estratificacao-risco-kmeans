@@ -1,22 +1,28 @@
-# Estratificação de Risco e Fenotipagem Exploratória (K-Means)
+## Paper: teste da hipótese de contínuo
 
-Repositório oficial contendo o pipeline de dados desenvolvido para o Trabalho de Conclusão de Curso do **MBA em Inteligência Artificial e Big Data** pelo ICMC - Universidade de São Paulo (USP).
+`src/pipeline_paper.py` estende o pipeline do TCC com os testes formais que o
+manuscrito "Gradiente ou categorias?" reporta. Reutiliza a escoragem de
+`pipeline_final.py`; a Etapa 0 reproduz a solução de referência (K = 2: 135/103,
+silhueta 0,212) e interrompe a execução se ela não for recuperada.
 
-**Autor:** Lucas Gabriel Silva de Santana
+Etapas: nulos da silhueta (normal multivariada e cópula gaussiana, B = 1000);
+GMM K = 1–5 em quatro covariâncias com BIC/aBIC; BLRT paramétrico e de cópula
+(`blrt_parametrico.py`, B = 1000); bootstrap, split-half não circular e 100
+sementes para K = 3; quatro sensibilidades à composição das dimensões; comparação
+perfil vs. DERS dicotomizada vs. DERS contínua na predição da DASS-21.
 
-## 🧠 Sobre o Projeto
-Este pipeline realiza o processamento de ponta a ponta de dados psicométricos de regulação emocional (DERS, EQR, LESS-II) e sofrimento psicológico (DASS-21). O objetivo principal é identificar perfis (fenótipos) de desregulação emocional utilizando aprendizado não supervisionado.
+Execução: `DATA_DIR=data OUT_DIR=outputs/paper python src/pipeline_paper.py`.
+Aceita `BASE_ANONIMIZADA_n238.csv` (depósito, itens brutos) ou as bases internas.
+Sementes 42 e 2026. Tempo aproximado: 15–40 min, dominado pelo BLRT.
 
-### Principais Etapas do Pipeline:
-1. **Pré-processamento:** Higienização, tratamento de atrito amostral e recodificação de itens reversos.
-2. **Escalonamento:** Transformação em *z-scores* das 22 dimensões clínicas.
-3. **Clusterização:** Algoritmo *K-Means* (k-means++).
-4. **Auditoria e Estabilidade:** 
-   - Reamostragem via *Bootstrap* (100 iterações).
-   - Análise probabilística via *Gaussian Mixture Models* (GMM).
-   - Imputação múltipla via *MICE* (análise de sensibilidade).
-5. **Testes de Hipótese:** Testes não paramétricos (Mann-Whitney e Kruskal-Wallis) com correção de Holm/Bonferroni.
-6. **Explicabilidade (XAI):** Treinamento de um *Random Forest* auxiliado por *SHAP values* para interpretar os pesos das features na definição do cluster de Alto Risco.
+Resultados de referência (n = 238): silhueta K = 2 não excede o nulo de cópula
+(p = 0,057); BIC seleciona K = 1 em covariância compartilhada e plena; BLRT sob
+cópula não rejeita K = 1; conclusão mantida nas quatro sensibilidades (ARI 0,65–0,97).
+
+Ambiente verificado: Python 3.13, numpy 2.3, pandas 2.2, scikit-learn 1.6.1,
+scipy 1.17. A solução K = 3 difere em um participante entre scikit-learn 1.6.1 e
+1.8.0 (ARI 0,989); as tabelas do manuscrito usam os rótulos oficiais 91/87/60.
+
 
 ## ⚙️ Como executar
 
